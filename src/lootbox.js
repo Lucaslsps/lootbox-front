@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './css/style.css';
 import './css/monojsilag.css';
 
-const servidor = "http://localhost:3000/draw";
-//const servidor = "https://lootbox-pxt.herokuapp.com/draw";
+//const servidor = "http://localhost:3000/draw";
+const servidor = "https://lootbox-pxt.herokuapp.com/draw";
 const btn_timer = 5000;
 
 class Lootbox extends Component{
