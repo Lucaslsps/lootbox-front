@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './css/style.css';
 import './css/monojsilag.css';
 
-const servidor_local = "http://localhost:3000/draw";
-const servidor = "https://lootbox-pxt.herokuapp.com/draw";
+const servidor = "http://localhost:3000/draw";
+//const servidor = "https://lootbox-pxt.herokuapp.com/draw";
 const btn_timer = 5000;
 
 class Lootbox extends Component{
@@ -47,14 +47,12 @@ class Lootbox extends Component{
           time: Date.now() - this.state.start
         }), 1);
         
-      });      
-
-              
+      });                    
     }
   }
 
   componentDidMount(){
-    
+
   }
   
 
@@ -85,8 +83,8 @@ class Lootbox extends Component{
 
     // Div com o botão
     let button = (this.state.time >= 5000) ?
-      <button onClick={()=> this.draw()}>Lootbox-e!</button> :
-      <button onClick={()=> this.draw()}>Em cooldown!</button>
+      <button onClick={()=> this.draw()}>Lootbox-e! </button> :
+      <button onClick={()=> this.draw()}>Em cooldown! {((5000 - (this.state.time))/1000).toFixed(0)}seg</button>
     
     // Div com o timer
     let timer = 
@@ -96,7 +94,7 @@ class Lootbox extends Component{
     // Título
     let title =
        <div>
-         <h1 class ="title">Titulo</h1>
+         <h1 class ="title">Titulo PLACEHOLDER</h1>
        </div>
 
     // Retorna todas as divs juntas
@@ -105,7 +103,6 @@ class Lootbox extends Component{
         {title}
         {cards}
         {button}
-        {timer}
       </div>
     );
   }
