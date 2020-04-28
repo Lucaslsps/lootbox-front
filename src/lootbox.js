@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import './css/style.css';
 import './css/monojsilag.css';
 
-//const servidor = "http://localhost:3000/draw";
-const servidor = "https://lootbox-pxt.herokuapp.com/draw";
+const servidor_draw = "http://localhost:3000/draw";
+//const servidor_draw = "https://lootbox-pxt.herokuapp.com/draw";
+
+const servidor_users = "http://localhost:3000/users";
+//const servidor_users = "https://lootbox-pxt.herokuapp.com/users";
+
 const btn_timer = 5000;
 
 class Lootbox extends Component{
@@ -14,7 +18,10 @@ class Lootbox extends Component{
     this.state={
       time: btn_timer,
       start: 0,
-      cardList:[]
+      cardList:[],
+      username: "",
+      password: "",
+      logged_in: false
     }
 
     this.draw = this.draw.bind(this);
@@ -25,7 +32,7 @@ class Lootbox extends Component{
     // O botão só funciona caso tenha passado 5 segundos
     if(this.state.time >= btn_timer){
       // Busca as informações na api
-      fetch(servidor)
+      fetch(servidor_draw)
       .then(response => response.json())
       .then(data => {
         this.setState({cardList:data})
@@ -49,6 +56,30 @@ class Lootbox extends Component{
         
       });                    
     }
+  }
+
+  //Função para logar usuário
+  login = event =>{
+    event.preventDefault();
+    
+    fetch(servidor_users, {
+      method:"POST",
+      headers: {'Content-Type': 'applications/json'},
+      body: JSON.stringify({
+        user:{
+          username: "this.state.username", 
+          password: "tetete"
+        }
+      })
+    })
+    .then( res => res.json())
+    .then(data =>{
+      console.log(data)
+    })
+  }
+
+  handleUsernameChange = event =>{
+    this.setState({username:event.target.value})
   }
 
   componentDidMount(){
@@ -93,16 +124,31 @@ class Lootbox extends Component{
 
     // Título
     let title =
-       <div>
-         <h1 class ="title">Titulo PLACEHOLDER</h1>
+       <div className ="title">
+         <h1 className ="title">Lootbox Generator</h1>
        </div>
+
+    // Login
+    let login =
+    <div className="login">
+      <form onSubmit={this.login}>
+        <input className="form-control" placeholder="nickname" onChange={this.handleUsernameChange}></input>
+        <input type="submit" value="Enviar"></input>
+      </form>
+    </div>
 
     // Retorna todas as divs juntas
     return(
       <div>
-        {title}
-        {cards}
-        {button}
+        <div className="top-screen">
+          {title}
+          {login}
+        </div>
+        <hr className="divisor"></hr>
+        <div className="bottom-screen">
+          {cards}
+          {button}
+        </div>
       </div>
     );
   }
