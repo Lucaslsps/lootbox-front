@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import './css/style.css';
 import './css/monojsilag.css';
 
-const servidor_draw = "http://localhost:3000/draw";
-//const servidor_draw = "https://lootbox-pxt.herokuapp.com/draw";
+//const servidor_draw = "http://localhost:3000/draw";
+const servidor_draw = "https://lootbox-pxt.herokuapp.com/draw";
 
-const servidor_users = "http://localhost:3000/users";
-//const servidor_users = "https://lootbox-pxt.herokuapp.com/users";
+//const servidor_users = "http://localhost:3000/users";
+const servidor_users = "https://lootbox-pxt.herokuapp.com/users";
 
 const btn_timer = 5000;
 
