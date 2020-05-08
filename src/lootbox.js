@@ -12,7 +12,9 @@ const servidor_addCard = process.env.REACT_APP_SERVIDOR_ADD_CARD
 const btn_timer = 5000;
 
 class Lootbox extends Component{
-  // Construtor com os atributos da classe
+  //
+  // Construtor com os props da classe
+  //
   constructor(props){
     super(props);
 
@@ -24,20 +26,23 @@ class Lootbox extends Component{
       logged_in: false,
       email: "",
       name:"", 
-      token:""
+      token:"",
+      disableCard:false
     }
 
     this.draw = this.draw.bind(this);
     this.addToUser = this.addToUser.bind(this);
   }
 
+  //
   // Google login
+  //
   logout = () => {
     this.setState({logged_in: false, token: '', user:    null})
   };
   
   onFailure = (error) => {
-    alert(error);
+    console.log(error);
   };
 
   googleResponse = (response) => {
@@ -65,7 +70,9 @@ class Lootbox extends Component{
     })
   };
 
-  // Função para chamar a api
+  //
+  // Função para chamar com os cards
+  //
   draw(){
     // O botão só funciona caso tenha passado 5 segundos
     if(this.state.time >= btn_timer){
@@ -73,7 +80,7 @@ class Lootbox extends Component{
       fetch(servidor_draw)
       .then(response => response.json())
       .then(data => {
-        this.setState({cardList:data})
+        this.setState({cardList:data, disableCard:false})
       })
       .then(()=> {
         // Reseta o timer
@@ -95,8 +102,10 @@ class Lootbox extends Component{
       });                    
     }
   }
-
-  //Função para logar usuário
+  
+  //
+  // Função para logar usuário sem google (em desenvolvimento)
+  //
   login = event =>{
     event.preventDefault();
     /*
@@ -115,6 +124,9 @@ class Lootbox extends Component{
     this.setState({username:event.target.value})
   }
 
+  //
+  // Função para adicionar card ao usuario
+  //
   addToUser(card){
     if(this.state.logged_in){
       
@@ -123,6 +135,8 @@ class Lootbox extends Component{
         email: this.state.email
       })
       .then( res => {
+        this.setState({disableCard:true})
+        console.log(this.state)
         console.log(res)
       })
 
@@ -132,10 +146,9 @@ class Lootbox extends Component{
     
   }
 
-  componentDidMount(){
-
-  }
-  
+  //
+  // Renderização do site
+  //
 
   render(){
 
@@ -147,7 +160,7 @@ class Lootbox extends Component{
               {this.state.cardList.map(item =>{
                 return(
                   <div className= {"card sel " + item.cardRarity}>
-                    <div className="imgBx" onClick={() => this.addToUser(item)}>
+                    <div className="imgBx" onClick={this.state.disableCard ? () => console.log("bla"): () => this.addToUser(item)}>
                       <img id="img" src={item.cardPath} alt="images"></img>
                     </div>
                     
