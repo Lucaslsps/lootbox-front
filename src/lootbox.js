@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './css/style.css';
 import './css/monojsilag.css';
+import { GoogleLogin } from 'react-google-login';
 
-//const servidor_draw = "http://localhost:3000/draw";
-const servidor_draw = "https://lootbox-pxt.herokuapp.com/draw";
-
-//const servidor_users = "http://localhost:3000/users";
-const servidor_users = "https://lootbox-pxt.herokuapp.com/users";
+// Links API
+const servidor_draw = process.env.REACT_APP_SERVIDOR_DRAW;
+const servidor_auth = process.env.REACT_APP_SERVIDOR_AUTH
+const servidor_addCard = process.env.REACT_APP_SERVIDOR_ADD_CARD
 
 const btn_timer = 5000;
 
@@ -19,14 +20,51 @@ class Lootbox extends Component{
       time: btn_timer,
       start: 0,
       cardList:[],
-      username: "",
-      password: "",
-      logged_in: false
+      userCardList:[],
+      logged_in: false,
+      email: "",
+      name:"", 
+      token:""
     }
 
     this.draw = this.draw.bind(this);
+    this.addToUser = this.addToUser.bind(this);
   }
+
+  // Google login
+  logout = () => {
+    this.setState({logged_in: false, token: '', user:    null})
+  };
   
+  onFailure = (error) => {
+    alert(error);
+  };
+
+  googleResponse = (response) => {
+    const tokenBlob = new Blob([JSON.stringify({
+      access_token: response.accessToken,
+      profile_object: response.profileObj
+    
+    }, null, 2)], {type : 'application/json'});
+    
+    const options = {
+        method: 'POST',
+        body: tokenBlob,
+        cache: 'default'
+    };
+
+    fetch(servidor_auth, options)
+    .then(response => response.json())
+    .then(res => {
+      this.setState({
+        logged_in:true, 
+        userCardList:res['cardList'],
+        email:res['email'],
+        name:res['name']
+      })
+    })
+  };
+
   // Função para chamar a api
   draw(){
     // O botão só funciona caso tenha passado 5 segundos
@@ -61,25 +99,37 @@ class Lootbox extends Component{
   //Função para logar usuário
   login = event =>{
     event.preventDefault();
-    
-    fetch(servidor_users, {
-      method:"POST",
-      headers: {'Content-Type': 'applications/json'},
-      body: JSON.stringify({
+    /*
+    axios.post(servidor_auth,{
         user:{
           username: "this.state.username", 
           password: "tetete"
-        }
-      })
+      }
     })
-    .then( res => res.json())
-    .then(data =>{
-      console.log(data)
-    })
+    .then( res => {
+      console.log(res)
+    })*/
   }
 
   handleUsernameChange = event =>{
     this.setState({username:event.target.value})
+  }
+
+  addToUser(card){
+    if(this.state.logged_in){
+      
+      axios.post(servidor_addCard,{
+        card: card,
+        email: this.state.email
+      })
+      .then( res => {
+        console.log(res)
+      })
+
+    }else{
+      alert("Faça login para adicionar o card a sua conta")
+    }
+    
   }
 
   componentDidMount(){
@@ -96,8 +146,8 @@ class Lootbox extends Component{
           <div className="box">
               {this.state.cardList.map(item =>{
                 return(
-                  <div className= {"card sel " +item.cardRarity}>
-                    <div className="imgBx">
+                  <div className= {"card sel " + item.cardRarity}>
+                    <div className="imgBx" onClick={() => this.addToUser(item)}>
                       <img id="img" src={item.cardPath} alt="images"></img>
                     </div>
                     
@@ -137,17 +187,45 @@ class Lootbox extends Component{
       </form>
     </div>
 
+    // Google Login
+    let google_login = !!this.state.logged_in ?
+            (
+                <div className="login">
+                    <p>Logged in</p>
+                    <div>
+                        {this.state.email}
+                    </div>
+                    <div>
+                        <button onClick={this.logout} className="button">
+                            Log out
+                        </button>
+                    </div>
+                </div>
+            ) :
+            (
+                <div className="login">
+                    <GoogleLogin
+                        clientId={process.env.REACT_APP_GOOGLE_ID}
+                        buttonText="Login"
+                        onSuccess={this.googleResponse}
+                        onFailure={this.onFailure}
+                    />
+                </div>
+            );
+
     // Retorna todas as divs juntas
     return(
       <div>
         <div className="top-screen">
           {title}
           {login}
+          
         </div>
         <hr className="divisor"></hr>
         <div className="bottom-screen">
           {cards}
           {button}
+          {google_login}
         </div>
       </div>
     );
