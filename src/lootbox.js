@@ -9,7 +9,7 @@ const servidor_draw = process.env.REACT_APP_SERVIDOR_DRAW;
 const servidor_auth = process.env.REACT_APP_SERVIDOR_AUTH
 const servidor_addCard = process.env.REACT_APP_SERVIDOR_ADD_CARD
 
-const btn_timer = 5000;
+const btn_timer = 10000;
 
 class Lootbox extends Component{
   //
@@ -136,8 +136,7 @@ class Lootbox extends Component{
       })
       .then( res => {
         this.setState({disableCard:true})
-        console.log(this.state)
-        console.log(res)
+        alert("Personagem adicionado a seu inventário")
       })
 
     }else{
